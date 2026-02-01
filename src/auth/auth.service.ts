@@ -24,17 +24,19 @@ export class AuthService {
       throw new BadRequestException('User with this email already exists');
     }
     const hashedPassword = await bcrypt.hash(registerDto.password, 10);
-    const partner = await this.prisma.partner.create({
+    return this.prisma.partner.create({
       data: {
         email: registerDto.email,
         name: registerDto.name,
         password: hashedPassword,
         role: registerDto.role,
       },
+      select: {
+        email: true,
+        name: true,
+        role: true,
+      },
     });
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { password, ...result } = partner;
-    return result;
   }
 
   async login(loginDto: LoginDto) {

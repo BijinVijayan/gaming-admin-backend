@@ -31,7 +31,7 @@ enum TransactionStatus {
 model Partner {
   id        String   @id @default(uuid())
   email     String   @unique
-  password  String   // Will be hashed
+  password  String
   name      String
   role      Role
   createdAt DateTime @default(now())
@@ -50,6 +50,7 @@ model User {
   id        String   @id @default(uuid())
   username  String   @unique
   email     String?
+  password  String
   createdAt DateTime @default(now())
 
   // Linked to a Partner
