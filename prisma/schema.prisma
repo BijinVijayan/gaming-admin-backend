@@ -1,0 +1,105 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  AGENT
+  AFFILIATE
+  ADMIN
+}
+
+enum TransactionType {
+  DEPOSIT
+  WITHDRAWAL
+  BET
+  WIN
+}
+
+enum TransactionStatus {
+  PENDING
+  COMPLETED
+  FAILED
+  REJECTED
+}
+
+// Can be an Agent or Affiliate
+model Partner {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String   // Will be hashed
+  name      String
+  role      Role
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  walletBalance Float @default(0.00)
+
+  users       User[]
+  commissions Commission[]
+  payouts     Payout[]
+  clicks      Click[]
+}
+
+// Player/User
+model User {
+  id        String   @id @default(uuid())
+  username  String   @unique
+  email     String?
+  createdAt DateTime @default(now())
+
+  // Linked to a Partner
+  partnerId String?
+  partner   Partner? @relation(fields: [partnerId], references: [id])
+
+  transactions Transaction[]
+}
+
+// Money Movement (Ledger)
+model Transaction {
+  id        String            @id @default(uuid())
+  amount    Float
+  type      TransactionType
+  status    TransactionStatus @default(COMPLETED)
+  createdAt DateTime          @default(now())
+
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+}
+
+// Earnings for Partners
+model Commission {
+  id        String   @id @default(uuid())
+  amount    Float
+  source    String   // Description of earning
+  createdAt DateTime @default(now())
+
+  partnerId String
+  partner   Partner @relation(fields: [partnerId], references: [id])
+}
+
+// Withdrawal Requests
+model Payout {
+  id        String            @id @default(uuid())
+  amount    Float
+  status    TransactionStatus @default(PENDING)
+  createdAt DateTime          @default(now())
+
+  partnerId String
+  partner   Partner @relation(fields: [partnerId], references: [id])
+}
+
+// Affiliate Tracking
+model Click {
+  id        String   @id @default(uuid())
+  ipAddress String
+  userAgent String?
+  createdAt DateTime @default(now())
+
+  partnerId String
+  partner   Partner @relation(fields: [partnerId], references: [id])
+}
