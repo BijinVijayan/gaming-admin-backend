@@ -32,6 +32,7 @@ export class AuthService {
         role: registerDto.role,
       },
       select: {
+        id: true,
         email: true,
         name: true,
         role: true,

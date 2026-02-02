@@ -1,19 +1,18 @@
 import {
   IsEmail,
-  IsEnum,
   IsNotEmpty,
+  IsOptional,
   IsString,
   IsStrongPassword,
 } from 'class-validator';
-import { Role } from '@prisma/client';
 
-export class RegisterDto {
-  @IsEmail()
-  email: string;
-
+export class PublicRegisterDto {
   @IsString()
   @IsNotEmpty()
-  name: string;
+  username: string;
+
+  @IsEmail()
+  email: string;
 
   @IsStrongPassword(
     {
@@ -25,12 +24,12 @@ export class RegisterDto {
     },
     {
       message:
-        'Password too weak. It must contain minimum 6 characters with 1 lowercase, 1 uppercase, 1 number, and 1 special character',
+        'Password too weak. Must contain 1 lowercase, 1 uppercase, 1 number, and 1 symbol.',
     },
   )
-  @IsNotEmpty()
   password: string;
 
-  @IsEnum(Role)
-  role: Role;
+  @IsOptional()
+  @IsString()
+  referralCode?: string;
 }

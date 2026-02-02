@@ -3,7 +3,6 @@ import {
   IsNotEmpty,
   IsString,
   IsStrongPassword,
-  MinLength,
 } from 'class-validator';
 
 export class CreateUserDto {
@@ -27,5 +26,6 @@ export class CreateUserDto {
         'Password too weak. Must contain 1 lowercase, 1 uppercase, 1 number, and 1 symbol.',
     },
   )
+  @IsNotEmpty()
   password: string;
 }
